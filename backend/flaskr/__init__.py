@@ -183,18 +183,44 @@ def create_app(test_config=None):
     category to be shown. 
     '''
 
-    '''
-  @TODO: 
-  Create a POST endpoint to get questions to play the quiz. 
-  This endpoint should take category and previous question parameters 
-  and return a random questions within the given category, 
-  if provided, and that is not one of the previous questions. 
+    # Play the Quiz Game
+    @app.route('/quizzes', methods=["POST"])
+    def post_quizzes():
+        try:
+            data = request.get_json()
+            category_id = int(data["quiz_category"]["id"])
+            category = Category.query.get(category_id)
+            previous_questions = data["previous_questions"]
+            if not category == None:
+                if "previous_questions" in data and len(previous_questions) > 0:
+                    questions = Question.query.filter(Question.id.notin_(
+                        previous_questions), Question.category == category.id).all()
+                else:
+                    questions = Question.query.filter(
+                        Question.category == category.id).all()
+            else:
+                if "previous_questions" in data and len(previous_questions) > 0:
+                    questions = Question.query.filter(
+                        Question.id.notin_(previous_questions)).all()
+                else:
+                    questions = Question.query.all()
+            max = len(questions) - 1
+            if max > 0:
+                question = questions[random.randint(0, max)].format()
+            else:
+                question = False
+            return jsonify({
+                "success": True,
+                "question": question
+            })
+        except:
+            abort(500, "An error occured while trying to load the next question")
 
+    '''  
   TEST: In the "Play" tab, after a user selects "All" or a category,
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
-
 
 # ERROR HANDLERS
 
