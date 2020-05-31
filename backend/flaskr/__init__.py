@@ -84,7 +84,7 @@ def create_app(test_config=None):
                 'questions': current_questions,
                 'total_questions': len(selection)
             })
-        except:
+        except Exception:
             abort(400)
 
     # POST new question
@@ -103,7 +103,7 @@ def create_app(test_config=None):
 
         try:
             question = Question(question=new_question, answer=new_answer,
-                                category=new_category, difficulty=new_difficulty)
+                                category=new_category, difficulty=new_difficulty)  # noqa
             question.insert()
 
             selection = Question.query.order_by(Question.id).all()
@@ -115,7 +115,7 @@ def create_app(test_config=None):
                 'questions': current_questions,
                 'total_questions': len(selection)
             })
-        except:
+        except Exception:
             abort(422)
 
     # SEARCH Questions
@@ -136,7 +136,7 @@ def create_app(test_config=None):
                 'total_questions_in_search': len(searched_questions)
             })
 
-        except:
+        except Exception:
             abort(422)
 
     # GET questions by Category
@@ -154,7 +154,7 @@ def create_app(test_config=None):
                 'current_category': category_id,
                 'total_questions': len(questions)
             })
-        except:
+        except Exception:
             abort(422)
 
     # Play the Quiz Game
@@ -165,17 +165,20 @@ def create_app(test_config=None):
             category_id = int(data["quiz_category"]["id"])
             category = Category.query.get(category_id)
             previous_questions = data["previous_questions"]
-            if not category == None:
-                if "previous_questions" in data and len(previous_questions) > 0:
-                    questions = Question.query.filter(Question.id.notin_(
-                        previous_questions), Question.category == category.id).all()
+            if not category == None:  # noqa
+                if "previous_questions" in data and len(previous_questions) > 0:  # noqa
+                    questions = Question.query.filter(
+                        Question.id.notin_(previous_questions),
+                        Question.category == category.id
+                    ).all()
                 else:
                     questions = Question.query.filter(
                         Question.category == category.id).all()
             else:
-                if "previous_questions" in data and len(previous_questions) > 0:
+                if "previous_questions" in data and len(previous_questions) > 0:  # noqa
                     questions = Question.query.filter(
-                        Question.id.notin_(previous_questions)).all()
+                        Question.id.notin_(previous_questions)
+                    ).all()
                 else:
                     questions = Question.query.all()
             max = len(questions) - 1
@@ -187,11 +190,10 @@ def create_app(test_config=None):
                 "success": True,
                 "question": question
             })
-        except:
-            abort(500, "An error occured while trying to load the next question")
+        except Exception:
+            abort(500, "An error occured while trying to load the next question")  # noqa
 
-
-# ERROR HANDLERS
+    # ERROR HANDLERS
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -230,7 +232,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 408,
-            "message": "The request took longer than the server was prepared to wait."
+            "message": "The request took longer than the server was prepared to wait."  # noqa
         }), 408
 
     @app.errorhandler(410)
@@ -238,7 +240,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 410,
-            "message": "The requested page is no longer available."
+            "message": "The requested page is no longer available."  # noqa
         }), 410
 
     @app.errorhandler(422)
@@ -254,7 +256,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 500,
-            "message": "The request was not completed. The server met an unexpected condition."
+            "message": "The request was not completed. The server met an unexpected condition."  # noqa
         }), 500
 
     return app
