@@ -56,34 +56,134 @@ Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` d
 
 ## API
 
-REVIEW_COMMENT
+#### GET '/categories'
 
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code.
-
-Endpoints
-GET '/categories'
-GET '/questions'
-DELETE '/questions/<int:question_id>'
-POST '/questions'
-POST '/questions/search'
-GET '/categories/<int:category_id>/questions'
-POST '/quizzes'
-
-
-
-
-GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs.
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Sample resonse
 
+```
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "success": true,
+  "total_categories": 6
+}
+```
+
+#### GET '/questions'
+
+- Fetches a all questions in the JSON format below (questions are paginated)
+- Request Arguments: None
+- Sample resonse
+
+```
+{
+ "questions": [
+    {
+      "answer": "Edward Scissorhands",
+      "category": 5,
+      "difficulty": 3,
+      "id": 6,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }, ],
+  "success": true,
+  "total_questions": 52
+}
+```
+
+#### DELETE '/questions/<int:question_id>'
+
+- Deletes a question based on its id
+- Request Arguments: question_id
+- Sample resonse
+
+```
+{
+    'success': True,
+    'deleted': question_id,
+    'questions': current_questions,
+    'total_questions': len(selection)
+}
+```
+
+#### POST '/questions'
+
+- Create a new question
+- Request Arguments: Need to supply all data for new question
+- Sample request:`curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"What is my name?", "answer":"John", "categeory":"1", "difficulty":"1"}'`
+- Sample response
+
+```
+{
+'success': True,
+'created': question.id,
+'questions': current_questions,
+'total_questions': len(selection)
+}
+```
+
+#### POST '/questions/search'
+
+- Search for a question by keyword
+- Request Arguments: Need to supply keyword
+- Sample request:`curl http://127.0.0.1:5000/questions/search -X POST -H "Content-Type: application/json" -d '{"searchTerm":"Actor"}''`
+- Sample response
+
+```
+{
+    'success': True,
+    'questions': searched_questions,
+    'total_questions_in_search': len(searched_questions)
+}
+```
+
+#### GET '/categories/<int:category_id>/questions'
+
+- Search for a question by category
+- Request Arguments: categorySample request:\_id
+- Sample response
+
+```
+{
+    'success': True,
+    'questions': [question.format() for question in questions],
+    'category': category_id,
+    'total_questions': len(questions)
+}
+```
+
+#### POST '/quizzes'
+
+- This request fetches a question to play the quiz game
+- Sample request: `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [], "quiz_category": {"type": "Art", "id": "1"}}'`
+- Sample response
+
+```
+{
+    "success": True,
+    "question": question
+}
+```
+
+## Error Handling
+
+Errors are returned in JSON format as per the example below.
+Error handlers were implemented for the following error codes: 400, 403, 404, 405, 408, 410, 422, 500
+
+```
+{
+    "success": False,
+    "error": 404,
+    "message": "resource not found"
+}
 ```
 
 ## Testing

@@ -164,10 +164,7 @@ def create_app(test_config=None):
     def post_quizzes():
         try:
             data = request.get_json()
-            print("Json Data: ")
-            print(data)
             category_id = int(data["quiz_category"]["id"])
-            print(category_id)
             category = Category.query.get(category_id)
             previous_questions = data["previous_questions"]
             if not category == None:  # noqa
