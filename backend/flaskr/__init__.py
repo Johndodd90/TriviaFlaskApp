@@ -43,7 +43,8 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'categories': category
+            'categories': category,
+            'total_categories': len(categories)
         })
 
     # Get Questions
@@ -145,13 +146,14 @@ def create_app(test_config=None):
         try:
             questions = Question.query.filter(
                 Question.category == category_id).all()
+
             if questions is None:
                 abort(404)
 
             return jsonify({
                 'success': True,
                 'questions': [question.format() for question in questions],
-                'current_category': category_id,
+                'category': category_id,
                 'total_questions': len(questions)
             })
         except Exception:
@@ -162,7 +164,10 @@ def create_app(test_config=None):
     def post_quizzes():
         try:
             data = request.get_json()
+            print("Json Data: ")
+            print(data)
             category_id = int(data["quiz_category"]["id"])
+            print(category_id)
             category = Category.query.get(category_id)
             previous_questions = data["previous_questions"]
             if not category == None:  # noqa
